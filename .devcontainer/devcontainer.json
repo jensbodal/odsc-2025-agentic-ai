@@ -1,0 +1,57 @@
+// .devcontainer/devcontainer.json
+{
+  "name": "agentic‑ai‑workshop",
+
+  // 1. Base image with Python 3.12
+  "image": "mcr.microsoft.com/devcontainers/python:3.12-bookworm",
+
+  // 2. Lightweight feature add‑ons
+  "features": {
+    // Git utilities
+    "ghcr.io/devcontainers/features/git:1": {},
+    // Assures a full Python tool‑chain & pipx
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12",
+      "installTools": true
+    }
+  },
+
+  // 3. Open the usual demo ports
+  "forwardPorts": [7860, 8888],
+  "portsAttributes": {
+    "7860": { "label": "Gradio",  "onAutoForward": "openBrowser" },
+    "8888": { "label": "Jupyter", "onAutoForward": "openBrowser" }
+  },
+
+  // 4. One‑shot provisioning – install uv, sync venv, add CrewAI CLI
+  "postCreateCommand": [
+    "curl -LsSf https://astral.sh/uv/install.sh | sh",     // install uv  [oai_citation:0‡docs.astral.sh](https://docs.astral.sh/uv/getting-started/installation/?utm_source=chatgpt.com)
+    "uv sync",                                             // resolve & install deps  [oai_citation:1‡github.com](https://github.com/jensbodal/odsc-2025-agentic-ai/raw/main/setup/SETUP-linux.md)
+    "uv tool install crewai"                               // extra tool step  [oai_citation:2‡github.com](https://github.com/jensbodal/odsc-2025-agentic-ai/raw/main/setup/SETUP-PC.md)
+  ],
+
+  // 5. VS Code ergonomics
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "ms-azuretools.vscode-docker",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        // let the editor auto‑pick the .venv that uv creates
+        "python.defaultInterpreterPath": "${containerWorkspaceFolder}/.venv/bin/python",
+        "python.terminal.activateEnvironment": true,
+        "python.venvPath": "${containerWorkspaceFolder}"
+      }
+    }
+  },
+
+  // 6. Surface common AI‑API secrets (Codespaces → Settings → Secrets → Codespaces)
+  "remoteEnv": {
+    "OPENAI_API_KEY": "",
+    "ANTHROPIC_API_KEY": "",
+    "GOOGLE_API_KEY": ""
+  }
+}
